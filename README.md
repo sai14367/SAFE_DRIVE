@@ -7,7 +7,7 @@ Here’s a polished, production-ready **README.md** you can drop into your repo 
 
 Real-time driver monitoring that detects **drowsiness (EAR)**, **yawning (MAR)**, **phone use near ears (hand landmarks)**, **face missing/camera blocked**, and escalates with **voice prompts, email alerts, looping buzzer**, and a **“pull over + quick math” recovery flow**.
 
-[https://github.com/user-attachments/assets/d81accfa-9953-44ba-bff0-d5429af88977](https://github.com/user-attachments/assets/d81accfa-9953-44ba-bff0-d5429af88977)
+
 
 > Works on a standard webcam. Built with **Python**, **OpenCV**, **MediaPipe**, and lightweight heuristics (no GPU required).
 
@@ -103,6 +103,7 @@ If you want email alerts:
 ## ⚙️ Configuration (in `main.py`)
 
 All tunables live in the `CONFIG` dict:
+```
 
 CONFIG = {
     # Detection thresholds
@@ -149,7 +150,7 @@ CONFIG = {
 ## ▶️ Run
 
 python main.py
-```
+
 
 * Press **`q`** to quit.
 * A window titled **“Bus Safety System”** will show:
@@ -158,7 +159,6 @@ python main.py
   * **EAR** & **MAR** values
   * **Event counters** (Drowsy / Yawn / Phone)
 
----
 
 ## 🧠 How It Works
 
