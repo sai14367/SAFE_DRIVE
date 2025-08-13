@@ -1,5 +1,4 @@
 # SAFE_DRIVE
-Here’s a polished, production-ready **README.md** you can drop into your repo for the bus/driver safety system you shared.
 
 ---
 
