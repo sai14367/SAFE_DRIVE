@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Safety System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .video-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 300px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(45deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+        }
+
+        .btn-stop {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-stop:hover {
+            background: linear-gradient(45deg, #d32f2f, #b71c1c);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .status-display {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .status-ok { color: #4CAF50; }
+        .status-warning { color: #FFC107; }
+        .status-danger { color: #f44336; }
+        .status-idle { color: #999; }
+
+        .alerts-section {
+            margin-top: 20px;
+        }
+
+        .alert-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .config-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 30px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .config-group {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .config-group h4 {
+            margin-bottom: 10px;
+            color: #FFC107;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification.success { background: #4CAF50; }
+        .notification.error { background: #f44336; }
+        .notification.show { opacity: 1; }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚌 Bus Safety System</h1>
+            <p>Advanced Driver Monitoring and Alert System</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="video-section">
+                <h3>Live Camera Feed</h3>
+                <div class="video-container">
+                    <div id="videoPlaceholder" class="video-placeholder">
+                        Camera feed will appear here when system is running
+                    </div>
+                    <img id="videoFeed" src="" style="display: none;" />
+                </div>
+                <div class="controls">
+                    <button id="startBtn" class="btn btn-start">Start System</button>
+                    <button id="stopBtn" class="btn btn-stop" disabled>Stop System</button>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3>System Statistics</h3>
+                <div class="status-display">
+                    <div id="systemStatus" class="status-text status-idle">SYSTEM IDLE</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div id="drowsinessCount" class="stat-number">0</div>
+                        <div class="stat-label">Drowsiness Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="yawnCount" class="stat-number">0</div>
+                        <div class="stat-label">Yawn Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="phoneCount" class="stat-number">0</div>
+                        <div class="stat-label">Phone Usage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="alertsCount" class="stat-number">0</div>
+                        <div class="stat-label">Alerts Sent</div>
+                    </div>
+                </div>
+
+                <div class="alerts-section">
+                    <h4>Recent Alerts</h4>
+                    <div id="alertsList">
+                        <div class="alert-item">No recent alerts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3>System Configuration</h3>
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Detection Parameters</h4>
+                    <div class="form-group">
+                        <label>EAR Threshold:</label>
+                        <input type="number" id="earThresh" step="0.01" min="0.1" max="0.5" />
+                    </div>
+                    <div class="form-group">
+                        <label>EAR Consecutive Frames:</label>
+                        <input type="number" id="earFrames" min="5" max="30" />
+                    </div>
+                    <div class="form-group">
+                        <label>MAR Threshold:</label>
+                        <input type="number" id="marThresh" step="0.5" min="15" max="40" />
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h4>Alert Settings</h4>
+                    <div class="form-group">
+                        <label>Voice Alert Cooldown (seconds):</label>
+                        <input type="number" id="voiceCooldown" min="1" max="10" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email Alert Cooldown (seconds):</label>
+                        <input type="number" id="emailCooldown" min="60" max="600" />
+                    </div>
+                    <div class="form-group">
+                        <label>Buzzer Delay (seconds):</label>
+                        <input type="number" id="buzzerDelay" min="5" max="30" />
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h4>Critical Thresholds</h4>
+                    <div class="form-group">
+                        <label>Stop Vehicle Threshold:</label>
+                        <input type="number" id="stopThreshold" min="5" max="20" />
+                    </div>
+                    <div class="form-group">
+                        <label>Math Problem Threshold:</label>
+                        <input type="number" id="mathThreshold" min="5" max="20" />
+                    </div>
+                    <div class="form-group">
+                        <label>Move Aside Repetitions:</label>
+                        <input type="number" id="moveReps" min="3" max="10" />
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h4>Email Configuration</h4>
+                    <div class="form-group">
+                        <label>Email Address:</label>
+                        <input type="email" id="emailUser" placeholder="your-email@gmail.com" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email Password:</label>
+                        <input type="password" id="emailPassword" placeholder="App password" />
+                    </div>
+                    <div class="form-group">
+                        <label>Receiver Email:</label>
+                        <input type="email" id="emailReceiver" placeholder="receiver@gmail.com" />
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="updateConfigBtn" class="btn btn-start">Update Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        let systemRunning = false;
+        let statsInterval;
+
+        // DOM elements
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const videoFeed = document.getElementById('videoFeed');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const systemStatus = document.getElementById('systemStatus');
+        const drowsinessCount = document.getElementById('drowsinessCount');
+        const yawnCount = document.getElementById('yawnCount');
+        const phoneCount = document.getElementById('phoneCount');
+        const alertsCount = document.getElementById('alertsCount');
+        const alertsList = document.getElementById('alertsList');
+        const updateConfigBtn = document.getElementById('updateConfigBtn');
+
+        // Event listeners
+        startBtn.addEventListener('click', startSystem);
+        stopBtn.addEventListener('click', stopSystem);
+        updateConfigBtn.addEventListener('click', updateConfig);
+
+        // Initialize
+        loadConfiguration();
+        updateStats();
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        async function startSystem() {
+            try {
+                const response = await fetch('/start_system', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    systemRunning = true;
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    videoPlaceholder.style.display = 'none';
+                    videoFeed.style.display = 'block';
+                    videoFeed.src = '/video_feed';
+                    
+                    // Start updating stats
+                    statsInterval = setInterval(updateStats, 1000);
+                    
+                    showNotification('Safety system started successfully!', 'success');
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to start system: ' + error.message, 'error');
+            }
+        }
+
+        async function stopSystem() {
+            try {
+                const response = await fetch('/stop_system', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    systemRunning = false;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    videoFeed.style.display = 'none';
+                    videoPlaceholder.style.display = 'flex';
+                    videoFeed.src = '';
+                    
+                    // Stop updating stats
+                    if (statsInterval) {
+                        clearInterval(statsInterval);
+                    }
+                    
+                    // Reset display
+                    systemStatus.textContent = 'SYSTEM IDLE';
+                    systemStatus.className = 'status-text status-idle';
+                    
+                    showNotification('Safety system stopped successfully!', 'success');
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to stop system: ' + error.message, 'error');
+            }
+        }
+
+        async function updateStats() {
+            if (!systemRunning) return;
+            
+            try {
+                const response = await fetch('/system_stats');
+                const stats = await response.json();
+                
+                // Update counters
+                drowsinessCount.textContent = stats.drowsiness_count || 0;
+                yawnCount.textContent = stats.yawn_count || 0;
+                phoneCount.textContent = stats.phone_use_count || 0;
+                alertsCount.textContent = stats.alerts_sent || 0;
+                
+                // Update status
+                const status = stats.status || 'IDLE';
+                systemStatus.textContent = status;
+                
+                // Set status color
+                systemStatus.className = 'status-text ';
+                if (status.includes('OK')) {
+                    systemStatus.className += 'status-ok';
+                } else if (status.includes('ALERT') || status.includes('DETECTED')) {
+                    systemStatus.className += 'status-danger';
+                } else if (status.includes('YAWN') || status.includes('MATH') || status.includes('MOVE')) {
+                    systemStatus.className += 'status-warning';
+                } else {
+                    systemStatus.className += 'status-idle';
+                }
+                
+                // Update alerts list
+                if (stats.last_alert) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert-item';
+                    alertDiv.textContent = `${stats.timestamp}: ${stats.last_alert}`;
+                    alertsList.insertBefore(alertDiv, alertsList.firstChild);
+                    
+                    // Keep only last 5 alerts
+                    while (alertsList.children.length > 5) {
+                        alertsList.removeChild(alertsList.lastChild);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Failed to update stats:', error);
+            }
+        }
+
+        async function loadConfiguration() {
+            try {
+                const response = await fetch('/get_config');
+                const config = await response.json();
+                
+                // Populate form fields
+                document.getElementById('earThresh').value = config.EAR_THRESH;
+                document.getElementById('earFrames').value = config.EAR_CONSEC_FRAMES;
+                document.getElementById('marThresh').value = config.MAR_THRESH;
+                document.getElementById('voiceCooldown').value = config.VOICE_ALERT_COOLDOWN_SECONDS;
+                document.getElementById('emailCooldown').value = config.EMAIL_ALERT_COOLDOWN_SECONDS;
+                document.getElementById('buzzerDelay').value = config.MISTAKE_DELAY_FOR_BUZZER;
+                document.getElementById('stopThreshold').value = config.STOP_VEHICLE_COUNT_THRESHOLD;
+                document.getElementById('mathThreshold').value = config.MATH_PROBLEM_COUNT_THRESHOLD;
+                document.getElementById('moveReps').value = config.MOVE_ASIDE_REPETITIONS;
+                document.getElementById('emailUser').value = config.EMAIL_USER;
+                document.getElementById('emailReceiver').value = config.EMAIL_RECEIVER;
+                
+            } catch (error) {
+                console.error('Failed to load configuration:', error);
+            }
+        }
+
+        async function updateConfig() {
+            const config = {
+                EAR_THRESH: parseFloat(document.getElementById('earThresh').value),
+                EAR_CONSEC_FRAMES: parseInt(document.getElementById('earFrames').value),
+                MAR_THRESH: parseFloat(document.getElementById('marThresh').value),
+                VOICE_ALERT_COOLDOWN_SECONDS: parseInt(document.getElementById('voiceCooldown').value),
+                EMAIL_ALERT_COOLDOWN_SECONDS: parseInt(document.getElementById('emailCooldown').value),
+                MISTAKE_DELAY_FOR_BUZZER: parseInt(document.getElementById('buzzerDelay').value),
+                STOP_VEHICLE_COUNT_THRESHOLD: parseInt(document.getElementById('stopThreshold').value),
+                MATH_PROBLEM_COUNT_THRESHOLD: parseInt(document.getElementById('mathThreshold').value),
+                MOVE_ASIDE_REPETITIONS: parseInt(document.getElementById('moveReps').value),
+                EMAIL_USER: document.getElementById('emailUser').value,
+                EMAIL_RECEIVER: document.getElementById('emailReceiver').value
+            };
+            
+            const password = document.getElementById('emailPassword').value;
+            if (password) {
+                config.EMAIL_PASSWORD = password;
+            }
+            
+            try {
+                const response = await fetch('/update_config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Configuration updated successfully!', 'success');
+                } else {
+                    showNotification('Failed to update configuration: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to update configuration: ' + error.message, 'error');
+            }
+        }
+
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && systemRunning) {
+                // Page is hidden, stop video feed to save bandwidth
+                videoFeed.src = '';
+            } else if (!document.hidden && systemRunning) {
+                // Page is visible again, restart video feed
+                videoFeed.src = '/video_feed';
+            }
+        });
+    </script>
+</body>
+</html>
